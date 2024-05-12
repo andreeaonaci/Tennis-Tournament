@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tour Schedule</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Tour Schedule</h1>
+<label for="tournament">Select Tournament:</label>
+<select id="tournamentId">
+</select>
+<button onclick="fetchSchedule()">Show Schedule</button>
+
+<div id="schedule"></div>
+
+<script>
+    fetch('/api/tournaments/all')
+        .then(response => response.json())
+        .then(tournaments => {
+            const tournamentDropdown = document.getElementById('tournamentId');
+            tournaments.forEach(tournament => {
+                const option = document.createElement('option');
+                option.value = tournament.tourId;
+                const location = tournament.location || "Location Not Available";
+                option.textContent = tournament.tourId + ' - ' + location;
+
+                tournamentDropdown.appendChild(option);
+            });
+
+        })
+        .catch(error => {
+            console.error('Error fetching tournaments:', error);
+        });
+
+    function fetchSchedule() {
+        var selectedTournament = document.getElementById("tournamentId").value;
+        var tournamentId = selectedTournament.split("-")[0];
+
+        fetch(`/api/tournaments/${tournamentId}/matches`)
+            .then(response => response.json())
+            .then(matches => {
+                var tableHtml = "<table><tr><th>Match</th><th>Date</th><th>Location</th></tr>";
+                matches.forEach(match => {
+                    var matchDate = new Date(match.matchDate);
+                    var formattedDate = matchDate.toLocaleString();
+
+                    tableHtml += `<tr><td>${match.matchId}</td><td>${match.formattedMatchDate}</td><td>${match.courtName}</td></tr>`;
+                });
+                tableHtml += "</table>";
+
+                document.getElementById("schedule").innerHTML = tableHtml;
+            })
+            .catch(error => {
+                console.error('Error fetching schedule:', error);
+                alert('Error occurred while fetching schedule');
+            });
+    }
+
+</script>
+</body>
+</html>

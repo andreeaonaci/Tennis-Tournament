@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Account Information</title>
+    <script th:inline="javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $("form").submit(function(event) {
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/users/update",
+                    data: formData,
+                    success: function(response) {
+                        $("#updateMessage").text("User updated successfully");
+                    },
+                    error: function(xhr, status, error) {
+                        $("#updateMessage").text("Error updating user: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>Update Account Information</h1>
+<form>
+    <label for="userId">User ID:</label>
+    <input type="text" id="userId" name="userId" th:value="${user.id}" required readonly><br><br>
+
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" th:value="${user.username}" ><br><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" th:value="${user.password}"><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" th:value="${user.email}"><br><br>
+
+    <label for="role">Role:</label>
+    <input type="role" id="role" name="role" th:value="${user.role}" readonly><br><br>
+    </select><br><br>
+
+    <input type="submit" value="Update Account">
+</form>
+<p id="updateMessage"></p>
+</body>
+</html>

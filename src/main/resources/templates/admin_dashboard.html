@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Administrator Dashboard</title>
+</head>
+<body>
+<h1>Welcome to Administrator Dashboard</h1>
+<p>Hello, <span th:text="${username}">Username</span>!</p>
+<ul>
+  <li><a href="/api/users/admin_user_management.html">User Management</a></li>
+  <li><a href="/api/users/admin_view_users.html">View All Users</a></li>
+  <li><a href="/api/users/admin_export_match_info.html">Export Match Information</a></li>
+  <li><a href="/api/users/create_matches.html">Create Matches</a></li>
+  <li><a href="/api/users/create_tournament.html">Create Tournaments</a></li>
+  <li><a th:href="@{/api/users/user_account_update.html(username=${username})}">Update Account Information</a></li>
+  <li><a href="/api/tournaments/admin_approvals.html">Tournament Registration Approval Dashboard</a></li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+<h1>Register</h1>
+<form id="registerForm">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" required><br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password" required><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br>
+    <label for="role">Role:</label><br>
+    <select id="role" name="role">
+        <option value="TENNIS_PLAYER">Tennis Player</option>
+        <option value="REFEREE">Referee</option>
+        <option value="ADMINISTRATOR">Administrator</option>
+    </select><br>
+    <button type="submit">Register</button>
+</form>
+<div id="message"></div>
+<a href="/api/users/login.html">Already have an account? Login</a>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var formData = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            email: document.getElementById("email").value,
+            role: document.getElementById("role").value
+        };
+
+        fetch("/api/users/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("message").innerText = "User registered successfully";
+                    console.log("User registered successfully");
+                } else {
+                    document.getElementById("message").innerText = "Registration failed";
+                    console.error("Registration failed");
+                }
+            })
+            .catch(error => {
+                document.getElementById("message").innerText = "Error registering user: " + error;
+                console.error("Error registering user:", error);
+            });
+    });
+</script>
+</body>
+</html>

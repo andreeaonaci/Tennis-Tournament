@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Scores</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+<h1>Manage Scores</h1>
+<div id="matchesTable"></div>
+<button onclick="updateScores()">Update Scores</button>
+<script>
+  async function getUsernameFromUrl() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('username');
+  }
+
+  async function fetchRefereeMatches(username) {
+    try {
+      const response = await fetch(`/api/users/${username}/matches_scores`);
+      const matches = await response.json();
+      return matches;
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+      return [];
+    }
+  }
+
+  async function updateMatchScore(matchId, newScore) {
+    try {
+      const response = await fetch(`/api/users/update_score?matchId=${matchId}&newScore=${newScore}`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        console.log('Score updated successfully');
+      } else {
+        console.error('Failed to update score');
+      }
+    } catch (error) {
+      console.error('Error updating score:', error);
+    }
+  }
+
+  async function displayMatches() {
+    const username = await getUsernameFromUrl();
+    if (username) {
+      const matches = await fetchRefereeMatches(username);
+      let tableHtml = "<table><tr><th>Match ID</th><th>Date</th><th>Location</th><th>Score</th></tr>";
+      matches.forEach(match => {
+        tableHtml += `<tr><td>${match.matchId}</td><td>${match.formattedMatchDate}</td><td>${match.courtName}</td><td><input type="text" id="score_${match.matchId}" value="${match.score}" /></td></tr>`;
+      });
+      tableHtml += "</table>";
+      document.getElementById("matchesTable").innerHTML = tableHtml;
+    } else {
+      console.error('Username not found in URL');
+    }
+  }
+
+  async function updateScores() {
+    const username = await getUsernameFromUrl();
+    if (username) {
+      const matches = await fetchRefereeMatches(username);
+      matches.forEach(match => {
+        const newScore = document.getElementById(`score_${match.matchId}`).value;
+        updateMatchScore(match.matchId, newScore);
+      });
+    } else {
+      console.error('Username not found in URL');
+    }
+  }
+
+  displayMatches();
+</script>
+</body>
+</html>

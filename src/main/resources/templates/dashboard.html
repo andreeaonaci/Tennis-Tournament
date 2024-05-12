@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+<h1>Welcome to Your Dashboard</h1>
+<ul id="dashboardLinks">
+</ul>
+
+<script>
+  function addDashboardLink(linkText, url) {
+    var listItem = document.createElement("li");
+    var link = document.createElement("a");
+    link.href = url;
+    link.textContent = linkText;
+    listItem.appendChild(link);
+    document.getElementById("dashboardLinks").appendChild(listItem);
+  }
+
+  var role = "{{ userRole }}";
+
+  if (role === "TENNIS_PLAYER") {
+    addDashboardLink("Tournament Registration", "/tournament_registration.html");
+    addDashboardLink("View Tour Schedule", "/schedule.html");
+    addDashboardLink("View Match Score", "/match_score.html");
+    addDashboardLink("Update Account Information", "/update_account.html");
+  } else if (role === "REFEREE") {
+    addDashboardLink("View Own Program", "/referee_own_program.html");
+    addDashboardLink("Manage Match Score", "/manage_match_score.html");
+    addDashboardLink("Update Account Information", "/update_account.html");
+  } else if (role === "ADMINISTRATOR") {
+    addDashboardLink("User Management", "/admin_user_management.html");
+    addDashboardLink("View All Users", "/admin_view_users.html");
+    addDashboardLink("Export Match Information", "/admin_export_match_info.html");
+    addDashboardLink("Update Account Information", "/update_account.html");
+  }
+</script>
+</body>
+</html>

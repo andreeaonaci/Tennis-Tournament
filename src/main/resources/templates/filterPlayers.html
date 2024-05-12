@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Filter Tennis Players</title>
+  <script>
+    // Function to filter players based on the provided criteria
+    function filterPlayers() {
+      var username = document.getElementById("username").value;
+      var email = document.getElementById("email").value;
+
+      // Build query parameters based on the form inputs
+      var query = `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`;
+
+      // Send an AJAX request to the backend to get the filtered players
+      fetch(`/api/users/filter-players?${query}`)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error("No players found or an error occurred");
+                }
+                return response.json();
+              })
+              .then(data => {
+                var resultsTable = document.getElementById("resultsTable");
+                resultsTable.innerHTML = ""; // Clear existing results
+                console.log("Filtered players:", data);
+                // Populate the table with the filtered player data
+                data.forEach(player => {
+                  var row = resultsTable.insertRow();
+                  row.insertCell(0).textContent = player.username;
+                  row.insertCell(1).textContent = player.email;
+                  row.insertCell(2).textContent = player.role; // Player's role
+                });
+              })
+              .catch(error => {
+                console.error("Error fetching filtered players:", error);
+                alert("No players found or an error occurred.");
+              });
+    }
+  </script>
+</head>
+<body>
+<h1>Filter Tennis Players</h1>
+
+<div>
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username">
+
+  <label for="email">Email:</label>
+  <input type="text" id="email" name="email">
+
+  <button onclick="filterPlayers()">Filter</button>
+</div>
+
+<table border="1">
+  <thead>
+  <tr>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Role</th>
+  </tr>
+  </thead>
+  <tbody id="resultsTable">
+  <!-- Filtered players will be inserted here -->
+  </tbody>
+</table>
+</body>
+</html>

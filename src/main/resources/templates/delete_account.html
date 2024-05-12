@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>User Management - Delete Account</h1>
+
+<form id="deleteForm">
+    <input type="hidden" id="userId" name="userId">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" disabled><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" disabled><br>
+    <label for="role">Role:</label><br>
+    <input type="text" id="role" name="role" disabled><br><br>
+    <button type="submit">Delete</button>
+</form>
+
+<br>
+
+<table id="userTable">
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody id="userData"></tbody>
+</table>
+
+<br>
+
+<a href="/api/users/dashboard.html">Back to Dashboard</a>
+
+<script>
+    function fetchUsers() {
+        fetch("/api/users/users")
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById("userData");
+                tableBody.innerHTML = "";
+
+                data.forEach(user => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+            <td>${user.userId}</td>
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+            <td>
+                <button type="button" onclick="populateForm(${user.userId}, '${user.username}', '${user.email}', '${user.role}')">Select</button>
+            </td>
+          `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching user data:", error);
+            });
+    }
+
+    function populateForm(userId, username, email, role) {
+        document.getElementById("userId").value = userId;
+        document.getElementById("username").value = username;
+        document.getElementById("email").value = email;
+        document.getElementById("role").value = role;
+    }
+
+    document.getElementById("deleteForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var userId = document.getElementById("userId").value;
+
+        fetch(`/api/users/delete/${userId}`, {
+            method: "DELETE"
+        })
+            .then(response => {
+                if (response.ok) {
+                    fetchUsers();
+                    document.getElementById("deleteForm").reset();
+                } else {
+                    throw new Error("Failed to delete user");
+                }
+            })
+            .catch(error => {
+                console.error("Error deleting user:", error);
+            });
+    });
+
+    fetchUsers();
+</script>
+
+</body>
+</html>

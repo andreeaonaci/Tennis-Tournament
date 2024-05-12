@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Choose Tournament</title>
+</head>
+<body>
+<h1>Choose Tournament</h1>
+<p>You are registering for a tournament as: <span id="usernameSpan"></span></p>
+<form id="tournamentForm" onsubmit="registerForTournament(); return false;">
+  <input type="hidden" id="username" name="username" value="${username}">
+  <label for="tournamentId">Select Tournament:</label>
+  <select id="tournamentId" name="tournamentId">
+  </select>
+  <input type="submit" value="Register">
+</form>
+
+<script>
+  fetch('/api/tournaments/all')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch tournaments');
+            }
+            return response.json();
+          })
+          .then(tournaments => {
+            const tournamentDropdown = document.getElementById('tournamentId');
+            tournaments.forEach(tournament => {
+              const option = document.createElement('option');
+              option.value = tournament.tourId;
+              const location = tournament.location || "Location Not Available";
+              option.textContent = `${tournament.tourId} - ${location}`;
+              tournamentDropdown.appendChild(option);
+            });
+          })
+          .catch(error => {
+            console.error('Error fetching tournaments:', error);
+            alert('Error occurred while fetching tournaments');
+          });
+
+  // Function to register for a tournament
+  function registerForTournament() {
+    const username = document.getElementById('usernameSpan').textContent;
+    const tournamentId = document.getElementById('tournamentId').value;
+    const userEnrollment = { tournamentId: tournamentId };
+
+    fetch(`/api/tournaments/tournament_registration?username=${username}`, {
+      method: 'POST',
+      body: JSON.stringify(userEnrollment),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+            .then(response => {
+              if (response.ok) {
+                alert('Registration successful');
+              } else {
+                alert('Registration failed');
+              }
+            })
+            .catch(error => {
+              console.error('Error registering for tournament:', error);
+              alert('Error occurred while registering for the tournament');
+            });
+  }
+
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
+  var username = getUrlParameter('username');
+
+  document.getElementById('usernameSpan').textContent = username;
+</script>
+</body>
+</html>

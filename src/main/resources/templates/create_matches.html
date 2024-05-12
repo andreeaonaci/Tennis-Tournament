@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Matches</title>
+</head>
+<body>
+<h1>Create Matches</h1>
+<form id="createMatchForm">
+    <table>
+        <caption>Player and Tournament Information</caption>
+        <thead>
+        <tr>
+            <th>Player ID</th>
+            <th>Player Username</th>
+            <th>Tournament ID</th>
+            <th>Tournament Location</th>
+        </tr>
+        </thead>
+        <tbody id="playerTournamentTable">
+        </tbody>
+    </table>
+    <br>
+    <table>
+        <caption>Referee Information</caption>
+        <thead>
+        <tr>
+            <th>Referee ID</th>
+            <th>Referee Username</th>
+        </tr>
+        </thead>
+        <tbody id="refereeTable">
+        </tbody>
+    </table>
+    <label for="player1">Player 1:</label>
+    <input type="text" id="player1" name="player1"><br>
+    <label for="player2">Player 2:</label>
+    <input type="text" id="player2" name="player2"><br>
+    <label for="referee">Referee ID:</label>
+    <input type="text" id="referee" name="referee"><br>
+    <label for="tournament">Tournament ID:</label>
+    <input type="text" id="tournament" name="tournament"><br>
+    <label for="matchDate">Match Date:</label>
+    <input type="text" id="matchDate" name="matchDate"><br>
+    <label for="score">Score:</label>
+    <input type="text" id="score" name="score"><br>
+    <label for="court">Court:</label>
+    <input type="text" id="court" name="court"><br>
+    <br>
+    <!-- Button to submit the form -->
+    <button type="button" onclick="createMatch()">Create Match</button>
+</form>
+
+<div id="createMatchMessage"></div>
+
+<script>
+    function createMatch() {
+        var player1Id = document.getElementById("player1").value;
+        var player2Id = document.getElementById("player2").value;
+        var refereeId = document.getElementById("referee").value;
+        var tournamentId = document.getElementById("tournament").value;
+        var matchDate = document.getElementById("matchDate").value;
+        var score = document.getElementById("score").value;
+        var court = document.getElementById("court").value;
+
+        var data = {
+            player1Id: player1Id,
+            player2Id: player2Id,
+            refereeId: refereeId,
+            tournamentId: tournamentId,
+            matchDate: matchDate,
+            score: score,
+            court: court
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/matches/create");
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = function () {
+            if (xhr.status === 201) {
+                document.getElementById("createMatchMessage").textContent = "Match created successfully.";
+            } else {
+                var errorMessage = xhr.responseText;
+                console.log("Error creating match: " + errorMessage);
+                document.getElementById("createMatchMessage").textContent = "Error: " + errorMessage;
+            }
+        };
+
+        xhr.send(JSON.stringify(data));
+    }
+
+    function populatePlayerTournamentTable() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/users/user-enrollments/all");
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var tableBody = document.getElementById("playerTournamentTable");
+
+                tableBody.innerHTML = "";
+
+                data.forEach(function (item) {
+                    var row = tableBody.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    var cell4 = row.insertCell(3);
+                    cell1.textContent = item.userId;
+                    cell2.textContent = item.username;
+                    cell3.textContent = item.tournamentId;
+                    cell4.textContent = item.location;
+                });
+
+            } else {
+                console.log("Failed to fetch player and tournament data.");
+            }
+        };
+        xhr.send();
+    }
+
+    function populateRefereeTable() {
+        var refereeXhr = new XMLHttpRequest();
+        refereeXhr.open("GET", "/api/users/referees-all");
+        refereeXhr.onload = function () {
+            if (refereeXhr.status === 200) {
+                var refereeData = JSON.parse(refereeXhr.responseText);
+                var refereeTableBody = document.getElementById("refereeTable");
+
+                refereeTableBody.innerHTML = "";
+
+                refereeData.forEach(function (referee) {
+                    var row = refereeTableBody.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    cell1.textContent = referee.userId;
+                    cell2.textContent = referee.username;
+                });
+            } else {
+                console.log("Failed to fetch referee data.");
+            }
+        };
+        refereeXhr.send();
+    }
+
+    window.onload = function () {
+        populatePlayerTournamentTable();
+        populateRefereeTable();
+    };
+
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player Dashboard</title>
+</head>
+<body>
+<h1>Welcome to Player Dashboard</h1>
+<p>Hello, <span th:text="${username}">Username</span>!</p>
+<ul>
+  <li><a th:href="@{'/api/tournaments/tournament_registration.html?username=' + ${username}}">Tournament Registration</a></li>
+  <li><a href="/api/matches/schedule.html">View Tour Schedule</a></li>
+  <li><a th:href="@{'/api/users/match_score.html?username=' + ${username}}">View Match Score</a></li>
+  <li><a th:href="@{/api/users/user_account_update.html(username=${username})}">Update Account Information</a></li>
+</ul>
+</body>
+</html>

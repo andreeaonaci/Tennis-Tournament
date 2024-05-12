@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Tournament</title>
+</head>
+<body>
+<h1>Create Tournament</h1>
+<form id="tournamentForm">
+    <label for="name">Tournament Name:</label><br>
+    <input type="text" id="name" name="name" required><br>
+    <label for="startDate">Start Date:</label><br>
+    <input type="date" id="startDate" name="startDate" required><br>
+    <label for="endDate">End Date:</label><br>
+    <input type="date" id="endDate" name="endDate" required><br>
+    <label for="location">Location:</label><br>
+    <input type="text" id="location" name="location" required><br>
+    <button type="submit">Create Tournament</button>
+</form>
+<div id="message"></div>
+
+<script>
+    document.getElementById("tournamentForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var formData = {
+            name: document.getElementById("name").value,
+            startDate: document.getElementById("startDate").value,
+            endDate: document.getElementById("endDate").value,
+            location: document.getElementById("location").value
+        };
+
+        fetch("/api/users/create_tournament", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("message").innerText = "Tournament created successfully";
+                    console.log("Tournament created successfully");
+                } else {
+                    document.getElementById("message").innerText = "Failed to create tournament";
+                    console.error("Failed to create tournament");
+                }
+            })
+            .catch(error => {
+                document.getElementById("message").innerText = "Error creating tournament: " + error;
+                console.error("Error creating tournament:", error);
+            });
+    });
+</script>
+
+</body>
+</html>

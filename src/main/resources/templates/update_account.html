@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Management</title>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+<h1>User Management - Update Account</h1>
+
+<form action="/api/users/update" id="updateForm">
+  <input type="hidden" id="userId" name="userId">
+  <label for="username">Username:</label><br>
+  <input type="text" id="username" name="username" required><br>
+  <label for="email">Email:</label><br>
+  <input type="email" id="email" name="email" required><br>
+  <label for="password">Password:</label><br>
+  <input type="password" id="password" name="password" required><br>
+  <label for="role">Role:</label><br>
+  <select id="role" name="role">
+    <option value="TENNIS_PLAYER">Tennis Player</option>
+    <option value="REFEREE">Referee</option>
+    <option value="ADMINISTRATOR">Administrator</option>
+  </select><br><br>
+  <button type="submit">Update</button>
+</form>
+
+<br>
+
+<table id="userTable">
+  <thead>
+  <tr>
+    <th>User ID</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Role</th>
+  </tr>
+  </thead>
+  <tbody id="userData"></tbody>
+</table>
+
+<br>
+
+<a href="/api/users/dashboard.html">Back to Dashboard</a>
+
+<script>
+  function fetchUsers() {
+    fetch("/api/users/users")
+            .then(response => response.json())
+            .then(data => {
+              const tableBody = document.getElementById("userData");
+              tableBody.innerHTML = "";
+
+              data.forEach(user => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+            <td>${user.userId}</td>
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+            <td>
+                <button type="button" onclick="updateUser(${user.userId})">Update</button>
+            </td>
+          `;
+                tableBody.appendChild(row);
+              });
+            })
+            .catch(error => {
+              console.error("Error fetching user data:", error);
+            });
+  }
+
+  function updateUser(userId) {
+    // Fetch user data by ID
+    fetch(`/api/users/${userId}`)
+            .then(response => response.json())
+            .then(user => {
+              document.getElementById("userId").value = user.userId;
+              document.getElementById("username").value = user.username;
+              document.getElementById("password").value = user.password;
+              document.getElementById("email").value = user.email;
+              document.getElementById("role").value = user.role;
+            })
+            .catch(error => {
+              console.error("Error fetching user data:", error);
+            });
+  }
+
+  fetchUsers();
+
+  document.getElementById("updateForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("/api/users/update", {
+      method: "POST",
+      body: formData
+    })
+            .then(response => {
+              if (response.ok) {
+                fetchUsers();
+
+                document.getElementById("updateForm").reset();
+              } else {
+                throw new Error("Failed to update user");
+              }
+            })
+            .catch(error => {
+              console.error("Error updating user:", error);
+            });
+  });
+</script>
+
+</body>
+</html>

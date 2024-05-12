@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Export Match Information</title>
+</head>
+<body>
+<h1>Export Match Information</h1>
+<form id="exportForm">
+  <label for="filterLabel">Filters:</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="matchId"> Match ID</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="tournament"> Tournament</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="player1"> Player 1</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="player2"> Player 2</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="referee"> Referee</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="matchDate"> Match Date</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="courtName"> Court Name</label><br>
+  <label><input type="checkbox" name="columnsToExport" value="score"> Score</label><br>
+
+  <br>
+  <input type="checkbox" id="csvExport" name="csvExport" value="csv"> Export as CSV<br>
+  <input type="checkbox" id="txtExport" name="txtExport" value="txt"> Export as TXT<br><br>
+
+  <button type="button" onclick="exportMatch()">Export</button>
+</form>
+<div id="exportMessage"></div>
+
+<script>
+  function exportMatch() {
+    var selectedColumns = [];
+    var checkboxes = document.getElementsByName("columnsToExport");
+    checkboxes.forEach(function(checkbox) {
+      if (checkbox.checked) {
+        selectedColumns.push(checkbox.value);
+      }
+    });
+    console.log("Selected Columns:", selectedColumns);
+
+    var csvExport = document.getElementById("csvExport").checked;
+    var txtExport = document.getElementById("txtExport").checked;
+    console.log("CSV Export:", csvExport);
+    console.log("TXT Export:", txtExport);
+
+    var exportRequest = {
+      columnsToExport: selectedColumns,
+      csvExport: csvExport,
+      txtExport: txtExport
+    };
+    console.log("Export Request:", exportRequest);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/matches/info/export");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        document.getElementById("exportMessage").textContent = xhr.responseText;
+      } else {
+        document.getElementById("exportMessage").textContent = "Export failed. Please try again.";
+      }
+    };
+    xhr.send(JSON.stringify(exportRequest));
+  }
+
+
+</script>
+</body>
+</html>

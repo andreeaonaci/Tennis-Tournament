@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matches Scores</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+<h1>Matches Scores</h1>
+
+<div id="match_score"></div>
+
+<script>
+  function getUsernameFromUrl() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('username');
+  }
+  async function getUserId(username) {
+    try {
+      const response = await fetch(`/api/users/username/${username}`);
+      const userData = await response.json();
+      return userData.userId;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return null;
+    }
+  }
+  async function fetchUserMatches(username) {
+    try {
+      const response = await fetch(`/api/users/${username}/scores`);
+      const matches = await response.json();
+      return matches;
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+      return [];
+    }
+  }
+  async function displayMatches() {
+    const username = getUsernameFromUrl();
+    const userId = await getUserId(username);
+    if (userId) {
+      const matches = await fetchUserMatches(userId);
+      const tableHtml = "<table><tr><th>Match ID</th><th>Date</th><th>Location</th><th>Score</th></tr>" +
+              matches.map(match => `<tr><td>${match.matchId}</td><td>${match.formattedMatchDate}</td><td>${match.courtName}</td><td>${match.score}</td></tr>`).join('') +
+              "</table>";
+      console.log(tableHtml);
+      document.getElementById("match_score").innerHTML = tableHtml;
+    } else {
+      console.error('User ID not found');
+    }
+  }
+  displayMatches();
+</script>
+</body>
+</html>
