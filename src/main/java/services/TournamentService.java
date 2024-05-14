@@ -40,4 +40,9 @@ public class TournamentService {
     public Tournament getTournamentById(Long tournamentId) {
         return tournamentRepository.findById(tournamentId).orElse(null);
     }
+
+    public int getTournamentByTournamentName(String tournamentName) {
+        return Math.toIntExact(tournamentRepository.findByLocation(tournamentName).getTourId());
+    }
+
 }

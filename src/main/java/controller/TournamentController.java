@@ -123,20 +123,20 @@ public class TournamentController {
                 userEnrollment.setStatus("Approved");
                 userEnrollmentService.updateEnrollment(userEnrollment);
 
-//                emailService.sendEmail(
-//                        userEnrollment.getEmail(),
-//                        "Tournament Registration Approved",
-//                        "Your registration for the tournament has been approved."
-//                );
+                emailService.sendEmail(
+                        "andreeamariaonaci@gmail.com",
+                        "Tournament Registration Approved",
+                        "Your registration for the tournament has been approved."
+                );
 
                 return ResponseEntity.ok("Registration approved");
             } else {
                 userEnrollmentService.deleteEnrollment(registrationId); // Delete registration
-//                emailService.sendEmail(
-//                        userEnrollment.getEmail(),
-//                        "Tournament Registration Denied",
-//                        "Your registration for the tournament has been denied."
-//                );
+                emailService.sendEmail(
+                        "andreeamariaonaci@gmail.com",
+                        "Tournament Registration Denied",
+                        "Your registration for the tournament has been denied."
+                );
 
                 return ResponseEntity.ok("Registration denied");
             }

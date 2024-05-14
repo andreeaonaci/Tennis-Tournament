@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.UserEnrollmentRepository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserEnrollmentService {
@@ -60,6 +62,26 @@ public class UserEnrollmentService {
 
     public UserEnrollment findById(Long registrationId) {
         return userEnrollmentRepository.findById(registrationId).orElse(null);
+    }
+
+    /**
+     * Filters users to return only those enrolled in a specific tournament.
+     *
+     * @param tournamentId The ID of the tournament to filter by.
+     * @return A list of users enrolled in the specified tournament.
+     */
+    public List<User> filterPlayersByTournament(Long tournamentId) {
+        // Get all users
+        List<User> allUsers = userService.getAllUsers();
+
+        if (tournamentId == null) {
+            return Collections.emptyList();
+        }
+
+        // Filter users by tournament enrollment using UserEnrollmentService
+        return allUsers.stream()
+                .filter(user -> isUserEnrolled(tournamentId, user.getId()))
+                .collect(Collectors.toList());
     }
 
 }

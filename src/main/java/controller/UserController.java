@@ -505,9 +505,22 @@ public class UserController {
     @GetMapping("/filter-players")
     public ResponseEntity<List<User>> filterPlayers(
             @RequestParam(required = false) String username,
-            @RequestParam(required = false) String email) {
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String tournamentName) {
 
-        List<User> filteredPlayers = userService.filterPlayers(username, email);
+        List<User> filteredPlayers;
+
+        System.out.println("tournamentName: " + tournamentName);
+
+        if(!tournamentName.equals("")) {
+            Long tournamentId = (long) tournamentService.getTournamentByTournamentName(tournamentName);
+            filteredPlayers = userEnrollmentService.filterPlayersByTournament(tournamentId);
+        } else {
+            // If tournamentName is null, do not filter by tournament
+            filteredPlayers = userService.filterPlayers(username, email);
+        }
+
         return ResponseEntity.ok(filteredPlayers);
     }
+
 }

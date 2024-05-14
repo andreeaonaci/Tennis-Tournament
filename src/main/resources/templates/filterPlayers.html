@@ -8,9 +8,10 @@
     function filterPlayers() {
       var username = document.getElementById("username").value;
       var email = document.getElementById("email").value;
+      var tournamentName = document.getElementById("tournamentName").value; // Get tournament name
 
       // Build query parameters based on the form inputs
-      var query = `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`;
+      var query = `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&tournamentName=${encodeURIComponent(tournamentName)}`;
 
       // Send an AJAX request to the backend to get the filtered players
       fetch(`/api/users/filter-players?${query}`)
@@ -48,6 +49,9 @@
 
   <label for="email">Email:</label>
   <input type="text" id="email" name="email">
+
+  <label for="tournamentName">Tournament Name:</label> <!-- Add label for tournament name -->
+  <input type="text" id="tournamentName" name="tournamentName"> <!-- Add input field for tournament name -->
 
   <button onclick="filterPlayers()">Filter</button>
 </div>

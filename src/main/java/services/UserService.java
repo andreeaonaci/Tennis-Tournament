@@ -17,6 +17,8 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    UserEnrollmentService userEnrollmentService;
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -88,7 +90,7 @@ public class UserService {
      * and applies additional filtering criteria such as username and email.
      *
      * @param username The username to filter by, or null to ignore this filter.
-     * @param email The email to filter by, or null to ignore this filter.
+     * @param email    The email to filter by, or null to ignore this filter.
      * @return A list of filtered tennis players.
      */
     public List<User> filterPlayers(String username, String email) {
@@ -97,23 +99,20 @@ public class UserService {
                 .filter(user -> user.getRole() == UserRole.TENNIS_PLAYER)
                 .collect(Collectors.toList());
 
-        List<User> filteredPlayers = tennisPlayers;
-
-        // Filter by username if it's not null
         if (username != null && !username.trim().isEmpty()) {
-            filteredPlayers = filteredPlayers.stream()
-                    .filter(user -> user.getUsername().equalsIgnoreCase(username))
+            final String finalUsername = username.toLowerCase();
+            tennisPlayers = tennisPlayers.stream()
+                    .filter(user -> user.getUsername().toLowerCase().contains(finalUsername))
                     .collect(Collectors.toList());
         }
 
-        // Further filter by email if it's not null
         if (email != null && !email.trim().isEmpty()) {
-            filteredPlayers = filteredPlayers.stream()
-                    .filter(user -> user.getEmail().equalsIgnoreCase(email))
+            final String finalEmail = email.toLowerCase();
+            tennisPlayers = tennisPlayers.stream()
+                    .filter(user -> user.getEmail().toLowerCase().contains(finalEmail))
                     .collect(Collectors.toList());
         }
 
-        return filteredPlayers;
+        return tennisPlayers;
     }
-
 }
